@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Soil Testing | Smart AgroTech</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px 15px;
+      text-align: center;
+      font-weight: 500;
+    }
+    th {
+      background-color: #388e3c;
+      color: white;
+      font-weight: 600;
+    }
+    button.btn-primary {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #388e3c;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button.btn-primary:hover {
+      background-color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container" id="content">
+    <h1>Latest Soil Testing & Predicted Crops</h1>
+    <table id="soilDataTable">
+      <thead>
+        <tr>
+          <th>Temperature (°C)</th>
+          <th>pH</th>
+          <th>Moisture (%)</th>
+          <th>Primary Crop</th>
+          <th>Secondary Crop</th>
+          <th>Tertiary Crop</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Firestore latest data will be added here -->
+      </tbody>
+    </table>
+    <button onclick="window.print()" class="btn-primary">Print Report</button>
+  </div>
+
+  <!-- Firebase Scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDMvd7sChFszzYr-nVsQOjz32WMHftnc4k",
+      authDomain: "smartagrotech-4cba6.firebaseapp.com",
+      projectId: "smartagrotech-4cba6",
+      storageBucket: "smartagrotech-4cba6.firebasestorage.app",
+      messagingSenderId: "244930388670",
+      appId: "1:244930388670:web:0589fea56b921666c7f4ef",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth();
+
+    async function fetchLatestSoilData() {
+      const soilDataTableBody = document.querySelector("#soilDataTable tbody");
+      soilDataTableBody.innerHTML = '';
+
+      const soilTestsCol = collection(db, "soil_tests");
+      const latestQuery = query(soilTestsCol, orderBy("timestamp", "desc"), limit(1));
+      const querySnapshot = await getDocs(latestQuery);
+
+      if (querySnapshot.empty) {
+        soilDataTableBody.innerHTML = '<tr><td colspan="6">No soil test data found.</td></tr>';
+        return;
+      }
+
+      querySnapshot.forEach(doc => {
+        const data = doc.data();
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${data.temperature ?? "-"}</td>
+          <td>${data.pH ?? "-"}</td>
+          <td>${data.moisture ?? "-"}</td>
+          <td>${data.primary_crop ?? "-"}</td>
+          <td>${data.secondary_crop ?? "-"}</td>
+          <td>${data.tertiary_crop ?? "-"}</td>
+        `;
+        soilDataTableBody.appendChild(row);
+      });
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        fetchLatestSoilData();
+      } else {
+        document.getElementById("content").innerHTML = `
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; text-align: center;">
+            <h2 style="margin-bottom: 20px;">You must be logged in to view this page.</h2>
+            <a href="login.html" style="padding: 10px 20px; background-color: #388e3c; color: white; text-decoration: none; border-radius: 5px; font-weight: 600;">Go to Login</a>
+          </div>
+        `;
+      }
+    });
+  </script>
+
+</body>
+</html>
