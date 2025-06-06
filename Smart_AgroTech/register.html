@@ -1,55 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Register | Smart AgroTech</title>
-<link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Register | Smart AgroTech</title>
+  <link rel="stylesheet" href="style.css" />
+  <script type="module" src="auth.js"></script>
 </head>
 <body>
-  <div class="container form-container">
-    <h2>Register</h2>
-    <form id="registerForm">
-      <label>Name</label>
-      <input type="text" id="name" required />
-      
-      <label>Email</label>
-      <input type="email" id="email" required />
-      
-      <label>Phone Number</label>
-      <input type="tel" id="phone" required />
-      
-      <label>Password</label>
-      <input type="password" id="password" required />
-      
-      <label>Confirm Password</label>
-      <input type="password" id="confirmPassword" required />
-      
-      <button type="submit" class="btn-primary">Register</button>
-    </form>
-    <p class="login-link">Already have an account? <a href="login.html">Login here</a></p>
+  <div class="auth-container">
+    <div class="auth-card">
+      <h1>Create Account</h1>
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" required placeholder="Enter your full name" />
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" required placeholder="Enter your email" />
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" required placeholder="Enter your phone number" />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" required placeholder="Create password" />
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" required placeholder="Confirm password" />
+        </div>
+
+        <div id="registerError" class="error-message" style="margin-bottom: 1rem; color: red;"></div>
+
+        <div style="text-align: center; margin-top: 1rem;">
+          <button type="submit" class="btn-primary" style="padding: 0.75rem 2rem; font-size: 1rem;">Register</button>
+        </div>
+      </form>
+      <p class="auth-footer">
+        Already have an account? <a href="login.html">Login here</a>
+      </p>
+    </div>
   </div>
-
-  <script type="module">
-    import { registerUser } from './auth.js';
-
-    const form = document.getElementById('registerForm');
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-
-      const name = form.name.value.trim();
-      const email = form.email.value.trim();
-      const phone = form.phone.value.trim();
-      const password = form.password.value;
-      const confirmPassword = form.confirmPassword.value;
-
-      if (password !== confirmPassword) {
-        alert("Passwords do not match!");
-        return;
-      }
-
-      registerUser(name, email, phone, password);
-    });
-  </script>
 </body>
 </html>
