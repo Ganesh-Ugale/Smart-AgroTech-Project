@@ -4,20 +4,141 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Smart AgroTech | Home</title>
-  <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <script type="module" src="auth-check.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 0 20px;
+    }
+
+    .navbar {
+      background-color: #2f855a;
+      padding: 1rem 0;
+    }
+
+    .navbar .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      color: #fff;
+      font-size: 1.5rem;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .nav-links li a,
+    .nav-links li button {
+      color: white;
+      text-decoration: none;
+      background-color: #38a169;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .nav-links li a:hover,
+    .nav-links li button:hover {
+      background-color: #2f855a;
+    }
+
+    .hero {
+      background-color: #e6fffa;
+      padding: 4rem 0;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #22543d;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    .btn-primary {
+      background-color: #38a169;
+      color: white;
+      padding: 1rem 2.5rem;
+      font-size: 1.2rem;
+      border-radius: 8px;
+      display: inline-block;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .btn-primary:hover {
+      background-color: #2f855a;
+    }
+
+    .quick-stats {
+      display: flex;
+      gap: 2rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-card {
+      background-color: white;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      flex: 1;
+      min-width: 200px;
+      text-align: center;
+    }
+
+    footer {
+      background-color: #2f855a;
+      color: white;
+      text-align: center;
+      padding: 1rem 0;
+      margin-top: 3rem;
+    }
+  </style>
 </head>
 <body>
   <header>
     <nav class="navbar">
       <div class="container">
         <a href="index.html" class="logo">🌿 Smart AgroTech</a>
-        <ul class="nav-links">
+        <ul class="nav-links" id="navLinks">
           <li><a href="index.html">Home</a></li>
           <li><a href="about.html">About</a></li>
-          <li><a href="soil-testing.html">Soil Testing</a></li>
+          <li><a href="soil-testing.html" id="soilTestLink">Soil Testing</a></li>
           <li><a href="contact.html">Contact</a></li>
-          <li><a href="login.html" class="btn">Login</a></li>
+          <li><a href="login.html" id="loginBtn">Login</a></li>
+          <li><button id="logoutBtn" style="display: none;">Logout</button></li>
         </ul>
       </div>
     </nav>
@@ -27,7 +148,25 @@
     <div class="container">
       <h1>Welcome to Smart AgroTech 🌱</h1>
       <p>Your smart partner for soil testing, crop recommendations, and sustainable farming powered by IoT and AI.</p>
-      <a href="soil-testing.html" class="btn-primary">View Live Soil Reports</a>
+      <a href="soil-testing.html" class="btn-primary" id="viewSoilBtn">View Live Soil Reports</a>
+    </div>
+  </section>
+
+  <section class="container" style="padding: 3rem 0;">
+    <h2>Latest Soil Stats</h2>
+    <div class="quick-stats">
+      <div class="stat-card">
+        <h3>Temperature</h3>
+        <p id="quickTemp">--°C</p>
+      </div>
+      <div class="stat-card">
+        <h3>pH Level</h3>
+        <p id="quickPh">--</p>
+      </div>
+      <div class="stat-card">
+        <h3>Moisture</h3>
+        <p id="quickMoisture">--%</p>
+      </div>
     </div>
   </section>
 
@@ -36,5 +175,45 @@
       <p>&copy; 2025 Smart AgroTech. All rights reserved.</p>
     </div>
   </footer>
+
+  <script type="module" src="quick-stats.js"></script>
+
+  <script>
+    // Show/Hide Login & Logout Button
+    document.addEventListener("DOMContentLoaded", () => {
+      const user = localStorage.getItem("user");
+      const loginBtn = document.getElementById("loginBtn");
+      const logoutBtn = document.getElementById("logoutBtn");
+      const soilTestLink = document.getElementById("soilTestLink");
+      const viewSoilBtn = document.getElementById("viewSoilBtn");
+
+      if (user) {
+        loginBtn.style.display = "none";
+        logoutBtn.style.display = "inline-block";
+      } else {
+        logoutBtn.style.display = "none";
+        loginBtn.style.display = "inline-block";
+
+        // Block access to soil testing
+        soilTestLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          alert("Please login to access Soil Testing.");
+          window.location.href = "login.html";
+        });
+
+        viewSoilBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          alert("Please login to access Soil Testing.");
+          window.location.href = "login.html";
+        });
+      }
+
+      // Logout Handler
+      logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem("user");
+        window.location.href = "login.html";
+      });
+    });
+  </script>
 </body>
 </html>
